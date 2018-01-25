@@ -1,6 +1,5 @@
 ﻿var step=0;												//记录不数
-var tem=[0,1,2,3,4,5,6,7,8];							//序号数组 用于数据重组
-var place=[	//坐标位置
+var place=[												//坐标位置
 			[0,0],[1,0],[2,0],
 			[0,1],[1,1],[2,1],
 			[0,2],[1,2],[2,2]
@@ -50,7 +49,6 @@ window.onload=function()
 	//reset重置,再来一次
 	oBtn_r.onclick=oBtn_Su.onclick=function(){
 		blockOnload();
-		
 		step=0;
 		oSpan_Step.innerHTML=step;
 	}
@@ -90,8 +88,9 @@ window.onload=function()
 	//onload
 }
 
-//初始化
+//initialization 初始化拼图块
 var blockOnload=function(){	
+	var tem=[0,1,2,3,4,5,6,7,8];							//序号数组 用于数据重组
 	var pos_ran=roa(tem);
 	for(i=0;i<9;i++)
 	{
