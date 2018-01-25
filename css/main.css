@@ -37,9 +37,10 @@ body{
   line-height: 20px;
   text-align: left;
   font-size: 1.5em;
-  background-image: url("../images/img_1.jpg");
+  background-image: url("https://dn-YEe5xNhU.qbox.me/78cb08ed395dec020a3d.jpg");
   background-repeat: no-repeat;
-    cursor: pointer;
+  cursor: pointer;
+  transition:all 0.3s ease;
 }
 #main .block > span {
   text-shadow: 2px 2px 2px #fff;
@@ -82,7 +83,8 @@ h1{
 	text-align:center;
 }
 button {
-   position: relative;
+    margin: 10px;
+    position: relative;
     padding: 10px 20px;
     font-size: 14px;
     background-color: #4bf;

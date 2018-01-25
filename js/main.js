@@ -1,116 +1,62 @@
-﻿window.onload=function()
+﻿var step=0;												//记录不数
+var tem=[0,1,2,3,4,5,6,7,8];							//序号数组 用于数据重组
+var place=[	//坐标位置
+			[0,0],[1,0],[2,0],
+			[0,1],[1,1],[2,1],
+			[0,2],[1,2],[2,2]
+		];											
+var img_=0;												//当前图片序号
+var bgimg=[												//全部图片路径
+	"https://dn-YEe5xNhU.qbox.me/78cb08ed395dec020a3d.jpg",
+	"https://dn-YEe5xNhU.qbox.me/29ad0c993bc331bcc990.jpg",
+	"https://dn-YEe5xNhU.qbox.me/163f3fa7d694d59c2a73.jpg",
+	"https://dn-YEe5xNhU.qbox.me/363b7e3b7be6a9b8e5e5.jpg",
+	"https://dn-YEe5xNhU.qbox.me/f2758e2f348db54ac450.jpg"
+];
+
+var aBlock=[];
+var complete=[];
+var open=[];
+var closed=[];
+	
+var side=100;
+
+var oBlock=document.getElementsByClassName("block");	//拼图块
+var oOrder=document.getElementsByClassName("order");	//数字标识
+var oBtn_c=document.getElementById("change");			//-切换图片
+var oBtn_r=document.getElementById("reset");			//-重置
+var oBtn_s=document.getElementById("showNum");			//-显示标识
+var oBtn_p=document.getElementById("prompt");			//-提示
+var oDivSu=document.getElementById("success");			//游戏结束覆盖
+var oBtn_Su=document.getElementById("successB");		//再来一次按钮
+var oSpan_Step=document.getElementById("step");			//步数
+var oSucc_Step=document.getElementById("suc_step");		//成功步数
+
+	
+window.onload=function()
 {
-	var step=0;
-	var tem=[0,1,2,3,4,5,6,7,8];
-	var pos_ran=[];
-	var img_=1;
-	var oBlock=document.getElementsByClassName("block");
-	var oOrder=document.getElementsByClassName("order");
-	var oBtn_c=document.getElementById("change");
-	var oBtn_r=document.getElementById("reset");
-	var oBtn_s=document.getElementById("showNum");
-	var oBtn_p=document.getElementById("prompt");
-	var oDivSu=document.getElementById("success");
-	var oBtn_Su=document.getElementById("successB");
-	var oSpan_Step=document.getElementById("step");
-	var oSucc_Step=document.getElementById("suc_step");
-	var place=[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2],];
 	
-	blockOnload();		//module initialization
+	blockOnload();		    //初始化拼图块
 	
-	for(i=0;i<9;i++)		//add events for block
-	{
-		oBlock[i].onclick=function()
-		{
-			var newT=aBlock[this.index].plac[0];
-			var newL=aBlock[this.index].plac[1]
-			
-			if(newL==aBlock[8].plac[1] && newT+1==aBlock[8].plac[0])	//down
-			{
-				aBlock[this.index].plac[0]++;
-				aBlock[this.index].init();
-				aBlock[8].plac[0]--;
-				step++;
-				oSpan_Step.innerHTML=step;
-			}
-			else if(newL==aBlock[8].plac[1] && newT-1==aBlock[8].plac[0])	//up
-			{
-				aBlock[this.index].plac[0]--;
-				aBlock[this.index].init();
-				aBlock[8].plac[0]++;
-				step++;
-				oSpan_Step.innerHTML=step;
-			}
-			else if(newT==aBlock[8].plac[0] && newL+1==aBlock[8].plac[1])	//right
-			{
-				aBlock[this.index].plac[1]++;
-				aBlock[this.index].init();
-				aBlock[8].plac[1]--;
-				step++;
-				oSpan_Step.innerHTML=step;
-			}
-			else if(newT==aBlock[8].plac[0] && newL-1==aBlock[8].plac[1])	//left
-			{
-				aBlock[this.index].plac[1]--;
-				aBlock[this.index].init();
-				aBlock[8].plac[1]++;
-				step++;
-				oSpan_Step.innerHTML=step;
-			}
-			//check success
-			for(var j=0;j<9;j++)
-			{
-				var a=aBlock[j].cheack();
-				if(!a)	
-				{
-					//console.log("第"+j+"个");
-					break;
-				}
-				else if(j==7) 
-				{
-					console.log("从"+j+"个");
-					aBlock[8].init();
-					oBlock[8].style.display="block";
-					oDivSu.style.display="block";
-					oSucc_Step.innerHTML=step;
-				}
-			}
-			
-		}
-	}
-	//module initialization
-	function blockOnload()
-	{
-		pos_ran=roa(tem);
-		for(i=0;i<9;i++)
-		{
-			oBlock[i].index=i;
-			var temp_a=place[i][0];
-			var temp_b=place[i][1];
-			aBlock[i]=new createBlock(i,place[pos_ran[i]],[temp_a,temp_b]);
-			aBlock[i].init();
-		}
-	}
-	//switch picture
+	//switch picture切换图片
 	oBtn_c.onclick=function(){
-		if(img_==7) img_=1;
+		if(img_==5) img_=0;
 		else	img_++;
 		for(var i=0;i<9;i++)
 		{	
-			oBlock[i].style.backgroundImage="url(./images/img_"+img_+".jpg)";
+			oBlock[i].style.backgroundImage="url("+bgimg[img_]+")";
 		}
 	}
-	//reset
+	//reset重置,再来一次
 	oBtn_r.onclick=oBtn_Su.onclick=function(){
-		on();
-		oDivSu.style.display="none";
-		oBlock[8].style.display="none";
+		blockOnload();
+		
 		step=0;
 		oSpan_Step.innerHTML=step;
 	}
-	//show or hidden order
+	//show or hidden order显示、隐藏数字
 	oBtn_s.onclick=function(){
-		 if (getStyle(oOrder[0],"display")=="block") {
+		if (getStyle(oOrder[0],"display")=="block") {
 			 for(var i=0;i<9;i++){
 				 oOrder[i].style.display = "none";
 			 } 
@@ -122,53 +68,108 @@
 			 }  
 			  oBtn_s.innerHTML="隐藏序号";
         }
-		}
-		
+	}
+	//提示最佳路径
+	oBtn_p.onclick=function(){
+		var temp=[];
+		console.log(aBlock)
+		aBlock.forEach(function(v,i,arr){
+			
+			if(v.id==8) return false;
+
+			if( Math.abs(v.plac[1]-arr[8].plac[1])==1 || Math.abs(v.plac[2]-arr[8].plac[2])==1 ){
+
+				console.log(v)
+				console.log(Math.abs(v.plac[1]-arr[8].plac[1]),Math.abs(v.plac[2]-arr[8].plac[2]))
+				console.log(v.id);
+			}
+		})
+		console.log(temp);
+
+	}
 	//onload
 }
-var aBlock=[];
-var complete=[];
-//constructed function
-function createBlock(int_id,arr_pla,arr_pur){
-	this.id=int_id;
-	this.plac=arr_pla;
-	this.purp=arr_pur;
-	this.obj=document.getElementById("block_"+int_id);
+
+//初始化
+var blockOnload=function(){	
+	var pos_ran=roa(tem);
+	for(i=0;i<9;i++)
+	{
+		oBlock[i].index=i;
+		aBlock[i]=new createBlock(i,pos_ran[i]);
+	}
+	console.log(aBlock);
 }
-//position initialization
+
+//constructed function构造函数
+function createBlock(int_id,palse_id){
+	this.id=int_id;								//块序号
+	this.plac=deepCopy(place[palse_id]);		//块当前位置
+	this.purp=deepCopy(place[int_id]);			//块目标位置
+	this.dis=0;
+	this.obj=document.getElementById("block_"+int_id);
+	this.init();
+	this.bindEvet();
+	this.distance();
+
+}
+//position initialization初始化位置
 createBlock.prototype.init=function()
 {
-	 startMove(this.obj,
-	 {
-		"top":this.plac[0]*100+"",
-		"left":this.plac[1]*100+"",
-	 }) 
+	this.obj.style.left=this.plac[0]*100+"px";
+	this.obj.style.top=this.plac[1]*100+"px";
 }
-//Check the target position and the current position
-createBlock.prototype.cheack=function()
-{
-	var a=this.plac.toString();
-	var b=this.purp.toString();
-	//console.log(this.id+a+" , "+b);
-	if(a==b) return true;
-	else return false;
+//events bind 拼图块事件绑定
+createBlock.prototype.bindEvet=function(){
+	this.obj.onclick=function(){
+		var x1=aBlock[this.index].plac[0];
+		var x2=aBlock[8].plac[0];
+		var y1=aBlock[this.index].plac[1];
+		var y2=aBlock[8].plac[1];
+		//console.log(x1,x2,y1,y2);
+		//console.log(Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2)));
+		if(Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))===1){	//Check the target position and the current position检查当前块是否在目标位置
+			aBlock[this.index].plac[0]=x2;
+			aBlock[this.index].plac[1]=y2;
+			aBlock[8].plac[0]=x1;
+			aBlock[8].plac[1]=y1;
+			aBlock[this.index].init();
+			aBlock[8].init();
+			aBlock[this.index].distance();
+			aBlock[8].distance();
+			console.log(aBlock);
+			for(var j=0;j<9;j++){
+				if(aBlock[j].dis>0){
+					return false;
+				} 
+				if(j==7){
+					aBlock[8].init();
+					oBlock[8].style.display="block";
+					oDivSu.style.display="block";
+					oSucc_Step.innerHTML=step;
+				}
+			}
+
+		}
+	}
 }
-//
+
 createBlock.prototype.distance=function()
 {
 	var plT=this.plac[0];
 	var plL=this.plac[1];
 	var puT=this.purp[0];
 	var puL=this.purp[1];
+	this.dis=Math.sqrt(Math.pow(plT-puT,2)+Math.pow(plL-puL,2));
 	
 }
 //
 
-//get random number
-function roa(ar)
+//获取随机数
+var roa=function(ar)
 {
-   var arr=ar;
-   var temp=new Array();
+   	var arr=ar;
+   	var temp=new Array();
 	var count=arr.length;
     for (i=0;i<count;i++)
     { 
@@ -177,4 +178,33 @@ function roa(ar)
         arr.splice(num,1);
     }
     return temp;
+}
+//获取dom属性
+var getStyle=function(obj, name)
+{
+	if(obj.currentStyle){
+		return obj.currentStyle[name];
+	}else{
+		return getComputedStyle(obj, false)[name];
+	}
+}
+//对象深拷贝
+var deepCopy=function(o){  //深拷贝
+    if (o instanceof Array) {
+        var n = [];
+        for (var i = 0; i < o.length; ++i) {
+            n[i] = deepCopy(o[i]);
+        }
+        return n;
+
+    } else if (o instanceof Object) {
+        var n = {}
+        for (var i in o) {
+            n[i] = deepCopy(o[i]);
+        }
+        return n;
+    } else {
+        return o;
+    }
+    
 }
