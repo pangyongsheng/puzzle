@@ -73,17 +73,8 @@ window.onload=function()
 		console.log(aBlock)
 		aBlock.forEach(function(v,i,arr){
 			
-			if(v.id==8) return false;
-
-			if( Math.abs(v.plac[1]-arr[8].plac[1])==1 || Math.abs(v.plac[2]-arr[8].plac[2])==1 ){
-
-				console.log(v)
-				console.log(Math.abs(v.plac[1]-arr[8].plac[1]),Math.abs(v.plac[2]-arr[8].plac[2]))
-				console.log(v.id);
-			}
+			
 		})
-		console.log(temp);
-
 	}
 	//onload
 }
