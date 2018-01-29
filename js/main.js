@@ -51,6 +51,10 @@ window.onload=function()
 		blockOnload();
 		step=0;
 		oSpan_Step.innerHTML=step;
+		oDivSu.style.display="none";
+		oBlock[8].style.display="none";
+		oSpan_Step.innerHTML=step;
+
 	}
 	//show or hidden order显示、隐藏数字
 	oBtn_s.onclick=function(){
@@ -69,14 +73,24 @@ window.onload=function()
 	}
 	//提示最佳路径
 	oBtn_p.onclick=function(){
-		var temp=[];
-		console.log(aBlock)
-		aBlock.forEach(function(v,i,arr){
+		var temp=deepCopy(aBlock);
+		var open=[];
+		var closed=[];
+		var checked=function(){
+			var t=0;
+			temp.forEach(function(v,i,arr){
+				t+=v.dis;
+			})
+			return t;
+		}
+		if(checked() != 0){
 			
-			
-		})
+		}
+		console.log(aBlock);
+		
+		
 	}
-	//onload
+	//End
 }
 
 //initialization 初始化拼图块
@@ -111,6 +125,7 @@ createBlock.prototype.init=function()
 }
 //events bind 拼图块事件绑定
 createBlock.prototype.bindEvet=function(){
+	var _this=this;
 	this.obj.onclick=function(){
 		var x1=aBlock[this.index].plac[0];
 		var x2=aBlock[8].plac[0];
@@ -127,23 +142,27 @@ createBlock.prototype.bindEvet=function(){
 			aBlock[8].init();
 			aBlock[this.index].distance();
 			aBlock[8].distance();
+			step++;
+			oSpan_Step.innerHTML=step;
 			console.log(aBlock);
-			for(var j=0;j<9;j++){
-				if(aBlock[j].dis>0){
-					return false;
-				} 
-				if(j==7){
-					aBlock[8].init();
-					oBlock[8].style.display="block";
-					oDivSu.style.display="block";
-					oSucc_Step.innerHTML=step;
-				}
-			}
+			_this.checked();
 
 		}
 	}
 }
-
+createBlock.prototype.checked=function(){
+	for(var j=0;j<9;j++){
+		if(aBlock[j].dis>0){
+			return false;
+		} 
+		if(j==7){
+			aBlock[8].init();
+			oBlock[8].style.display="block";
+			oDivSu.style.display="block";
+			oSucc_Step.innerHTML=step;
+		}
+	}
+}
 createBlock.prototype.distance=function()
 {
 	var plT=this.plac[0];
