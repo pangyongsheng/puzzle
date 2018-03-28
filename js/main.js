@@ -37,6 +37,9 @@
         this.purposeOder=[0, 1, 2, 3, 4, 5, 6, 7, 8];         //目标排序
         this.distanceCount=0;
         this.isShowOrder='显示序号';
+        //状态空间搜索
+        this.Open=[];
+        this.Closed=[];
         //初始化
         this.blockInit();
         this.eventBind();
@@ -45,17 +48,17 @@
     puzzle.prototype.blockInit=function(){
         var _this=this;
         Array.prototype.forEach.call(this.block,function(ele,i){
-            let temp=_this.getCoordinate(i)
+            let temp=_this.getCoordinate(_this.nowOrder[i]);
             ele.style.left = temp.x * 100 + "px";
             ele.style.top  = temp.y * 100 + "px";
         })
         _this.stepCount.innerHTML = _this.step;
     }
-    //获取第i个方块坐标（@位置序号->坐标）
+    //获取i位置坐标（@序号->坐标）
     puzzle.prototype.getCoordinate=function(index){
         return {
-            x:this.place[this.nowOrder[index]][0],
-            y:this.place[this.nowOrder[index]][1],
+            x:this.place[index][0],
+            y:this.place[index][1],
         }
     }
     //距离判断(@位置序号->距离)
@@ -64,11 +67,11 @@
         let bb = this.getCoordinate(b);
         return Math.abs(aa.x - bb.x) + Math.abs(aa.y - bb.y);
     }
-    //当前总距离
-    puzzle.prototype.totalDis=function(){
+    //当前状态总距离
+    puzzle.prototype.totalDis=function(arr){
         var _this=this;
         var temp=0;
-        this.nowOrder.forEach(function(ele,index){
+        arr.forEach(function(ele,index){
             temp+=_this.distance(ele,index);
         })
         return temp;
@@ -79,7 +82,7 @@
         //block
         Array.prototype.forEach.call(this.block,function(ele,i){
             ele.onclick=function(){
-                if(_this.distance(i,8)==1){ //判断是否与第八个相邻
+                if(_this.distance(_this.nowOrder[i],_this.nowOrder[8])==1){ //判断是否与第八个相邻
                     var temp=_this.nowOrder[8];
                     _this.nowOrder[8]=_this.nowOrder[i];
                     _this.nowOrder[i]=temp;
@@ -87,9 +90,9 @@
                     _this.step++;
                     _this.blockInit();
                     //剩余距离
-                    _this.distanceCount=_this.totalDis();
+                    _this.distanceCount=_this.totalDis(_this.nowOrder);
                     //判断是否完成
-                    console.log(_this.distanceCount)
+                    //console.log(_this.distanceCount);
                     if(_this.distanceCount==0){
                         _this.successShow();
                     }
@@ -128,9 +131,81 @@
                 ele.style.backgroundImage = "url(" + _this.bgimg[_this.img_] + ")";
             })
         }
+        //A*
+        this.btn.prompt.onclick = function(){
+            _this.searchA();
+        }
     }
+
+
     //状态空间搜索
-    
+    puzzle.prototype.searchA=function(){
+        var _this=this;
+        var n=0;
+        var lastState;
+        //估价函数
+        var hx=_this.totalDis(_this.nowOrder)+_this.step;
+        _this.Open.push({
+            h:hx,
+            state:_this.nowOrder
+        });
+        while (_this.Open.length!==0) {
+            var temp;    //当前节点
+            _this.Open.forEach(function(el,index){
+                var i=0;
+                temp=deepCopy(el);
+                if(el.h<temp.h){
+                    temp=deepCopy(el);
+                    i=index;
+                }
+                if(_this.Open.length==index+1){
+                    _this.Open.splice(i,1);
+                }
+            })
+            console.log(_this.Open);
+            _this.Closed.push(temp);
+            //是否为目标节点
+            if(JSON.stringify(temp.state) == JSON.stringify(_this.purposeOder)){
+                break;
+            }
+            var nowAllNode=_this.Open.concat(_this.Closed);
+            //扩展节点
+            temp.state.forEach(function(el,index){
+                var nowA=deepCopy(temp.state);
+                if(_this.distance(el,temp.state[8])==1){
+                    let s=nowA[index];
+                    nowA[index]=nowA[8];
+                    nowA[8]=s;
+                    var kz={
+                        h:_this.step+_this.totalDis(nowA),
+                        state:nowA
+                    }
+                    // if(JSON.stringify(kz.state) != JSON.stringify(lastState))
+                    // _this.Open.push(kz);
+                    //判断扩展的节点既不在Open中也不在Closed中
+                    nowAllNode.forEach(function(el,index){
+                        if(JSON.stringify(kz.state) == JSON.stringify(el.state)) return;
+                        if(nowAllNode.length==index+1) _this.Open.push(kz);
+                    })
+                }
+            })
+            console.log(_this.Open);
+            console.log(_this.Closed);
+            if(n!=0){
+                _this.step++;
+                lastState=_this.nowOrder;
+                //_this.nowOrder=_this.Closed.pop().state;
+                //_this.blockInit();
+            }
+            n++;
+        }
+        //_this.Closed.push(_this.Open.pop());
+        console.log("成功了");
+    }
+    //执行A*成功路径
+    puzzle.prototype.successPro=function(){
+
+    }
     //成功
     puzzle.prototype.successShow=function(){
         this.block[8].style.display = "block";
