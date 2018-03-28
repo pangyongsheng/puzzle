@@ -37,14 +37,14 @@ body{
   line-height: 20px;
   text-align: left;
   font-size: 1.5em;
-  background-image: url("https://dn-YEe5xNhU.qbox.me/78cb08ed395dec020a3d.jpg");
+  background-image: url("https://lc-yee5xnhu.cn-n1.lcfile.com/78cb08ed395dec020a3d.jpg");
   background-repeat: no-repeat;
   cursor: pointer;
   transition:all 0.3s ease;
 }
 #main .block > span {
   text-shadow: 2px 2px 2px #fff;
-  display:block;
+  display:none;
 
 }
 #main .block:nth-child(1) {
