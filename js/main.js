@@ -143,17 +143,20 @@
         var _this=this;
         var n=0;
         var lastState;
+        var nowAllNode=[];
+        var isSuccess=false;
         //估价函数
         var hx=_this.totalDis(_this.nowOrder)+_this.step;
         _this.Open.push({
             h:hx,
             state:_this.nowOrder
         });
+        nowAllNode=nowAllNode.concat(_this.Open);
         while (_this.Open.length!==0) {
             var temp;    //当前节点
+            var i=0;
+            temp=deepCopy(_this.Open[0]);
             _this.Open.forEach(function(el,index){
-                var i=0;
-                temp=deepCopy(el);
                 if(el.h<temp.h){
                     temp=deepCopy(el);
                     i=index;
@@ -162,45 +165,49 @@
                     _this.Open.splice(i,1);
                 }
             })
-            console.log(_this.Open);
             _this.Closed.push(temp);
             //是否为目标节点
             if(JSON.stringify(temp.state) == JSON.stringify(_this.purposeOder)){
+                alert("成功只差一步之遥，O(∩_∩)O哈哈~");
+                isSuccess=true;
                 break;
             }
-            var nowAllNode=_this.Open.concat(_this.Closed);
+            nowAllNode.push(temp);
+            if(nowAllNode.lenght>2){
+                splice(0, 1);
+            }
+            _this.Open=[];
             //扩展节点
             temp.state.forEach(function(el,index){
                 var nowA=deepCopy(temp.state);
                 if(_this.distance(el,temp.state[8])==1){
-                    let s=nowA[index];
+                    let s=el;
                     nowA[index]=nowA[8];
                     nowA[8]=s;
                     var kz={
                         h:_this.step+_this.totalDis(nowA),
                         state:nowA
                     }
-                    // if(JSON.stringify(kz.state) != JSON.stringify(lastState))
-                    // _this.Open.push(kz);
-                    //判断扩展的节点既不在Open中也不在Closed中
-                    nowAllNode.forEach(function(el,index){
-                        if(JSON.stringify(kz.state) == JSON.stringify(el.state)) return;
-                        if(nowAllNode.length==index+1) _this.Open.push(kz);
-                    })
+                    var m=true;
+                    for(var i=0;i<nowAllNode.length;i++){   //判断是否走过次节点
+                        if(JSON.stringify(kz.state) == JSON.stringify(nowAllNode[i].state)) m=false;
+                        if(nowAllNode.length==i+1 && m) _this.Open.push(kz);
+                    }
                 }
             })
-            console.log(_this.Open);
-            console.log(_this.Closed);
             if(n!=0){
                 _this.step++;
                 lastState=_this.nowOrder;
-                //_this.nowOrder=_this.Closed.pop().state;
-                //_this.blockInit();
+                _this.nowOrder=_this.Closed.pop().state;
+                console.log(_this.nowOrder);
+                _this.blockInit();
             }
             n++;
         }
-        //_this.Closed.push(_this.Open.pop());
-        console.log("成功了");
+        if(!isSuccess){
+            alert('没有找到，重置一下位置试试看！！！╮(╯﹏╰)╭');
+        }
+
     }
     //执行A*成功路径
     puzzle.prototype.successPro=function(){
